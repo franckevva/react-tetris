@@ -51,5 +51,5 @@ export const useStage = (player: IPlayer, resetPlayer) => {
 
     }, [player, resetPlayer]);
 
-    return [stage, setStage];
+    return [stage, setStage, rowsCleared];
 }
