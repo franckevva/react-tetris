@@ -19,6 +19,8 @@ import Display from './Display';
 const Tetris = () => {
     const [dropTime, setDropTime] = useState(null);
     const [gameOver, setGameOver] = useState(false);
+    const [gameBreak, setGameBreak] = useState(false);
+    const [gameStarted, setGameStart] = useState(false);
 
     const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer();
     const [stage, setStage, rowsCleared] = useStage(player, resetPlayer);
@@ -31,10 +33,12 @@ const Tetris = () => {
     }
 
     const startGame = () => {
+        console.log('start game');
         setStage(createStage());
         resetPlayer();
         setDropTime(1000);
         setGameOver(false);
+        setGameStart(true);
         setScore(0);
         setRows(0);
         setLevel(0);
@@ -74,7 +78,7 @@ const Tetris = () => {
         drop();
     }
 
-    const move = ({ keyCode }) => {
+    const keyEventListener = ({ keyCode }) => {
         if (!gameOver) {
             switch (keyCode) {
                 // Left
@@ -89,11 +93,31 @@ const Tetris = () => {
                 case 40:
                     dropPlayer();
                     break;
+                // Ctrl - rotate
                 // Up - rotate
+                case 17:
                 case 38:
                     playerRotate(stage, 1);
+                    break;
+                // Space - pause/continue game
+                case 32:
+                    breakGame();
+                    break;
+                // Enter - start new game
+                case 13:
+                    startGame();
+                    break;
             }
         }
+    }
+
+    const breakGame = () => {
+        if (gameBreak) {
+            setDropTime(1000 / (level + 1) + 200);
+        } else {
+            setDropTime(null);
+        }
+        setGameBreak(prev => !prev);
     }
 
     useInterval(() => {
@@ -101,7 +125,7 @@ const Tetris = () => {
     }, dropTime);
 
     return (
-        <StyledTetrisWrapper role="button" tabIndex={0} onKeyDown={e => move(e)} onKeyUp={e => keyUp(e)}>
+        <StyledTetrisWrapper role="button" tabIndex={0} onKeyDown={e => keyEventListener(e)} onKeyUp={e => keyUp(e)}>
             <StyledTetris>
                 <Stage stage={stage} />
                 <aside>
@@ -115,8 +139,21 @@ const Tetris = () => {
                             </div>
                         )}
 
-                    <StartButton callback={startGame} />
+                    <StartButton text={gameBreak ? "Continue" : "Pause"} callback={breakGame} disabled={!gameStarted || gameOver} />
+                    <StartButton text="Start game" callback={startGame} />
                 </aside>
+                <div className="hint">
+                    <p>Hint:</p>
+                    <ul>
+                        <li>UP&emsp;&emsp;&emsp;- rotate</li>
+                        <li>Ctrl &emsp;- rotate</li>
+                        <li>Left &emsp;- move to left</li>
+                        <li>Right&emsp;- move to right</li>
+                        <li>Down &emsp;- increase speed to down</li>
+                        <li>Space&emsp;- pause/continue game</li>
+                        <li>Enter&emsp;- start game</li>
+                    </ul>
+                </div>
             </StyledTetris>
         </StyledTetrisWrapper>
     )
