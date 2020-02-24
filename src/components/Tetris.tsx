@@ -4,6 +4,7 @@ import { createStage, checkCollision } from '../gameHelpers';
 
 // Styled Components
 import { StyledTetris, StyledTetrisWrapper } from './styles/StyledTetris';
+import { StyledSpeedBox } from './styles/StyledSpeedBox';
 
 //Custom Hooks
 import { useInterval } from '../hooks/useInterval';
@@ -22,6 +23,7 @@ const Tetris = () => {
     const [gameOver, setGameOver] = useState(false);
     const [gameBreak, setGameBreak] = useState(false);
     const [gameStarted, setGameStart] = useState(false);
+    const [speed, setSpeed] = useState(1500);
 
     const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer();
     const [stage, setStage, rowsCleared] = useStage(player, resetPlayer);
@@ -37,7 +39,7 @@ const Tetris = () => {
         console.log('start game');
         setStage(createStage());
         resetPlayer();
-        setDropTime(1000);
+        setDropTime(speed);
         setGameOver(false);
         setGameStart(true);
         setScore(0);
@@ -45,12 +47,29 @@ const Tetris = () => {
         setLevel(0);
     }
 
+    const calculateSpeed = (increase: boolean) => {
+        let value = speed;
+        if (value > 500) {
+            value = increase ? value - 100 : value + 100;
+        } else if (value > 200) {
+            value = increase ? value - 50 : value + 50;
+        } else if (value > 10) {
+            value = increase ? value - 10 : value + 10;
+        }
+        if (value < 10) { value = 10 };
+        setSpeed(value);
+        setDropTime(getSpeedTime());
+    };
+
+    const getSpeedTime = () => (speed / (level + 1));
+
+
     const drop = () => {
         // Increase level when player has cleared 10 rows
         if (rows > (level + 1) * 10) {
             setLevel(prev => prev + 1);
             // increase speed
-            setDropTime(1000 / (level + 1) + 200);
+            setDropTime(getSpeedTime());
         }
 
         if (!checkCollision(player, stage, { x: 0, y: 1 })) {
@@ -69,7 +88,7 @@ const Tetris = () => {
     const keyUp = ({ keyCode }) => {
         if (!gameOver) {
             if (keyCode === 40) {
-                setDropTime(1000 / (level + 1) + 200);
+                setDropTime(getSpeedTime());
             }
         }
     }
@@ -114,7 +133,7 @@ const Tetris = () => {
 
     const breakGame = () => {
         if (gameBreak) {
-            setDropTime(1000 / (level + 1) + 200);
+            setDropTime(getSpeedTime());
         } else {
             setDropTime(null);
         }
@@ -139,10 +158,17 @@ const Tetris = () => {
                                 <Display text={`Level: ${level}`} />
                             </div>
                         )}
+                    <StyledSpeedBox>
+                        <span>Speed rate: {speed}</span>
+                        <div>
+                            <button onClick={() => calculateSpeed(true)}>Increase</button>
+                            <button onClick={() => calculateSpeed(false)}>Decrease</button>
+                        </div>
+                    </StyledSpeedBox>
 
                     <StartButton text={gameBreak ? "Continue" : "Pause"} callback={breakGame} disabled={!gameStarted || gameOver} />
                     <StartButton text="Start game" callback={startGame} />
-                    { gameStarted ? <NextElement nextElement={player.nextTetromino}/> : null }
+                    {gameStarted ? <NextElement nextElement={player.nextTetromino} /> : null}
                 </aside>
                 <div className="hint">
                     <p>Hint:</p>

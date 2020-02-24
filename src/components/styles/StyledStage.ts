@@ -20,12 +20,12 @@ export const StyledStage = styled.div<IStageProps>`
 `
 
 export const StyledStageNewElement = styled.div<IStageProps>`
-    width: 100px;
-    height: 100px;
+    width: calc(100px / 4 * ${props => props.width});
+    height: calc(100px / 4 * ${props => props.width});;
     display: grid;
     grid-template-rows: repeat(
         ${props => props.height},
-        calc(100px / ${props => props.width})
+        calc(100px / 4 )
     );
     grid-template-columns: repeat(${props => props.width}, 1fr);
     grid-gap: 1px;
