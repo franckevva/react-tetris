@@ -15,6 +15,7 @@ import { useGameStatus } from '../hooks/useGameStatus';
 import Stage from './Stage';
 import StartButton from './StartButton';
 import Display from './Display';
+import NextElement from './NextElement';
 
 const Tetris = () => {
     const [dropTime, setDropTime] = useState(null);
@@ -141,6 +142,7 @@ const Tetris = () => {
 
                     <StartButton text={gameBreak ? "Continue" : "Pause"} callback={breakGame} disabled={!gameStarted || gameOver} />
                     <StartButton text="Start game" callback={startGame} />
+                    { gameStarted ? <NextElement nextElement={player.nextTetromino}/> : null }
                 </aside>
                 <div className="hint">
                     <p>Hint:</p>

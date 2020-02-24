@@ -2,11 +2,13 @@ import { useState, useCallback } from 'react';
 
 import { TETROMINOS, randomTetromino } from '../tetrominos';
 import { STAGE_WIDTH, checkCollision } from '../gameHelpers';
+import { IPlayer } from '../models/models';
 
 export const usePlayer = (): any => {
-    const [player, setPlayer] = useState({
+    const [player, setPlayer] = useState<IPlayer>({
         pos: { x: 0, y: 0 },
         tetromino: TETROMINOS[0].shape,
+        nextTetromino:  randomTetromino().shape,
         collided: false,
     });
 
@@ -51,11 +53,12 @@ export const usePlayer = (): any => {
     }
 
     const resetPlayer = useCallback(() => {
-        setPlayer({
+        setPlayer(prev => ({
             pos: { x: STAGE_WIDTH / 2 - 2, y: 0 },
-            tetromino: randomTetromino().shape,
+            tetromino: prev.nextTetromino,
+            nextTetromino:  randomTetromino().shape,
             collided: false,
-        })
+        }))
     }, []);
 
     return [player, updatePlayerPos, resetPlayer, playerRotate];

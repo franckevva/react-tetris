@@ -17,6 +17,7 @@ export const StyledTetris = styled.div`
     margin: 0 auto;
     max-width: 1200px;
     justify-content: center;
+    height: calc(100vh - 50px);
 
     aside {
         width: 100%;
@@ -31,5 +32,6 @@ export const StyledTetris = styled.div`
         font-size: 0.75rem;
         font-family: Pixel, Arial, Helvetica, sans-serif;
         line-height: 1.75;
+        align-self: flex-end;
     }
 `

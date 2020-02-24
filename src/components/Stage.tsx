@@ -4,7 +4,7 @@ import { StyledStage } from './styles/StyledStage';
 
 import Cell from './Cell';
 
-const Stage = ({ stage } ) => (
+const Stage = ({ stage }) => (
     <StyledStage width={stage[0].length} height={stage.length}>
         {stage.map((row: Array<any>) =>
             row.map((cell, x) => (
